@@ -1,52 +1,38 @@
-<!DOCTYPE HTML>
-<html>
-	<head>
-		<title>Plan your day</title>
-		<link rel="stylesheet" type="text/css" href="style.css">
-	</head>
+<?php
+	$page_title = 'Planning Tool';
+	include ('includes/header.html');
 
-	<body>
-	<?php
-		$servername = "localhost";
-		$username = "root";
-		$password = "";
-		$dbname = "planing-tool";
+	require ('../mysqli_connect.php');
 
-		// Create connection
-		$conn = new mysqli($servername, $username, $password, $dbname);
+	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-		// Check connection
-		if ($conn->connect_error) {
-			die("Connection failed: " . $conn->connect_error);
-		}
-		
-		if ($_SERVER["REQUEST_METHOD"] == "POST") {
-			$description = $_POST["task-name"];
+		$description = $_POST["task-name"];
+		$list = 1;
+		if ($_POST["list"]=="week") {
 			$list = 1;
-			if ($_POST["list"]=="week") {
-				$list = 1;
-			} else if ($_POST["list"] == "future") {
-				$list = 2;
-			} else {
-				$list = 3;
-			}
-			
-			$insert_task_sql = "INSERT INTO tasks (description, list) VALUES ('" . $description . "', " . $list . ")";
-				
-			echo "POST\n";
-				
-			if ($conn->query($insert_task_sql) === TRUE) {
-				echo "New record created successfully<br />";
-			}
+		} else if ($_POST["list"] == "future") {
+			$list = 2;
+		} else {
+			$list = 3;
 		}
-		
-		
-		$sql = "SELECT * FROM tasks";
+
+		$insert_task_sql = "INSERT INTO tasks (description, list) VALUES ('" . $description . "', " . $list . ")";
+
+		echo "POST\n";
+
+		/*if ($conn->query($insert_task_sql) === TRUE) {
+			echo "New record created successfully<br />";
+		}*/
+
+		mysqli_close($dbc);
+		exit();
+	} else {
+		/*$sql = "SELECT * FROM tasks";
 		$result = $conn->query($sql);
 		$future_list = [];
 		$week_list = [];
 		$today_list = [];
-		
+
 		if ($result === FALSE) {
 			echo "0 results";
 		} else if  ($result && $result->num_rows) {
@@ -54,9 +40,12 @@
 			while($row = $result->fetch_assoc()) {
 				echo "id: " . $row["id"] . " - Description: " . $row["description"] . " - List: " . $row["list"] . "<br />";
 			}
-		}
-		$conn->close();
-	?>
+		}*/
+	}
+
+	mysqli_close($dbc);
+
+?>
 		<div class="daily">
 			<h1>Today</h1>
 			<ul>
@@ -64,7 +53,7 @@
 				<li>Test #2</li>
 			<ul>
 		</div>
-		
+
 		<div class="weekly">
 			<h1>This week</h1>
 			<ul>
@@ -72,7 +61,7 @@
 				<li>Test #2</li>
 			<ul>
 		</div>
-		
+
 		<div class="future">
 			<h1>Future</h1>
 			<ul>
@@ -80,7 +69,7 @@
 				<li>Test #2</li>
 			<ul>
 		</div>
-		
+
 		<div class="add-task">
 			<form action="index.php" method="post">
 				<input type="text" name="task-name">
@@ -113,5 +102,5 @@
 				<li>blablabla - 20/01/2015</li>
 			</ul>
 		</div>
-	</body>
-</html>
+
+<?php include ('includes/footer.html');
