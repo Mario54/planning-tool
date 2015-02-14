@@ -10,9 +10,13 @@
 
 .future {
 	float: left;
-	
+
 }
 
 .add-task {
 	clear: both;
+}
+
+.error {
+	color: red;
 }
