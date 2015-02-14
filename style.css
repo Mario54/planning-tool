@@ -1,0 +1,18 @@
+.daily {
+	float: left;
+	margin-right: 150px;
+}
+
+.weekly {
+	float: left;
+	margin-right: 150px;
+}
+
+.future {
+	float: left;
+	
+}
+
+.add-task {
+	clear: both;
+}
