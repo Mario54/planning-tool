@@ -5,8 +5,15 @@
 	require ('../mysqli_connect.php');
 
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
+		$errors = [];
 
-		$description = $_POST["task-name"];
+		if (empty($_POST['title'])) {
+			// error
+			$errors[] = 'You did not enter a name for the task';
+		} else {
+			$t = $_POST['title'];
+		}
+
 		$list = 1;
 		if ($_POST["list"]=="week") {
 			$list = 1;
@@ -16,16 +23,25 @@
 			$list = 3;
 		}
 
-		$insert_task_sql = "INSERT INTO tasks (description, list) VALUES ('" . $description . "', " . $list . ")";
+		if (empty($errors)) {
+			$q = "INSERT INTO todos (title, completed,
+				date_added, list_id) VALUES ('" . $t . "', 0, NOW(), $list)";
+			$r = mysqli_query($dbc, $q);
 
-		echo "POST\n";
+			if ($r) {
+				echo '<p>Successfuly added the new task</p>';
+			}
 
-		/*if ($conn->query($insert_task_sql) === TRUE) {
-			echo "New record created successfully<br />";
-		}*/
+			mysqli_close($dbc);
+			exit();
+		} else {
+			// display errors
+			foreach ($errors as $msg) {
+				echo '<p>' . $msg . '</p>';
+			}
+		}
 
-		mysqli_close($dbc);
-		exit();
+
 	} else {
 		/*$sql = "SELECT * FROM tasks";
 		$result = $conn->query($sql);
@@ -72,7 +88,7 @@
 
 		<div class="add-task">
 			<form action="index.php" method="post">
-				<input type="text" name="task-name">
+				<input type="text" name="title">
 				<select name="list">
 					<option value="week">Week</option>
 					<option value="future">Future</option>
