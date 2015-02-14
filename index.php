@@ -43,48 +43,53 @@
 
 
 	} else {
-		/*$sql = "SELECT * FROM tasks";
-		$result = $conn->query($sql);
-		$future_list = [];
-		$week_list = [];
-		$today_list = [];
+		$q = "SELECT * FROM lists";
+		$r = mysqli_query($dbc, $q);
+		$num = mysqli_num_rows($r);
 
-		if ($result === FALSE) {
-			echo "0 results";
-		} else if  ($result && $result->num_rows) {
-			// output data of each row
-			while($row = $result->fetch_assoc()) {
-				echo "id: " . $row["id"] . " - Description: " . $row["description"] . " - List: " . $row["list"] . "<br />";
+		if ($num > 0) {
+			$lists = array();
+
+			// build up an array with all the lists
+			while($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
+				$lists[$row['list_id']] = array(
+					'list_name' => $row['name'],
+					'todos' => array()
+				);
 			}
-		}*/
+
+			$q = "SELECT todo_id, list_id, title FROM todos";
+			$r = mysqli_query($dbc, $q);
+
+			while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
+				$lists[$row['list_id']]['todos'][] = array(
+					'todo_id' => $row['todo_id'],
+					'title' => $row['title']
+				);
+			}
+
+		} else { // nothing
+			echo 'No tasks';
+		}
 	}
 
 	mysqli_close($dbc);
 
+	if (isset($lists) && count($lists) > 0) {
+		foreach ($lists as $list_id => $list_info) {
+			echo '<div><h1>' . $list_info['list_name'] . '</h1>';
+			if (count($list_info['todos']) > 0) {
+				echo '<ul>';
+				foreach($list_info['todos'] as $todo_id => $todo_info) {
+					echo '<li>' . $todo_info['title'] . '</li>';
+				}
+				echo '</ul>';
+			}
+
+		}
+	}
 ?>
-		<div class="daily">
-			<h1>Today</h1>
-			<ul>
-				<li><form action="delete.php" method="post">Test <input type="submit" value="delete"></form></li>
-				<li>Test #2</li>
-			<ul>
-		</div>
 
-		<div class="weekly">
-			<h1>This week</h1>
-			<ul>
-				<li>Test</li>
-				<li>Test #2</li>
-			<ul>
-		</div>
-
-		<div class="future">
-			<h1>Future</h1>
-			<ul>
-				<li>Test</li>
-				<li>Test #2</li>
-			<ul>
-		</div>
 
 		<div class="add-task">
 			<form action="index.php" method="post">
