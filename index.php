@@ -13,27 +13,20 @@
 		} else {
 			$t = $_POST['title'];
 		}
-
-		$list = 1;
-		if ($_POST["list"]=="week") {
-			$list = 1;
-		} else if ($_POST["list"] == "future") {
-			$list = 2;
+		if (empty($_POST['list_id'])) {
+			$errors[] = 'List doesn\'t exists';
 		} else {
-			$list = 3;
+			$l = $_POST['list_id'];
 		}
 
 		if (empty($errors)) {
 			$q = "INSERT INTO todos (title, completed,
-				date_added, list_id) VALUES ('" . $t . "', 0, NOW(), $list)";
+				date_added, list_id) VALUES ('" . $t . "', 0, NOW(), $l)";
 			$r = mysqli_query($dbc, $q);
 
 			if ($r) {
 				echo '<p>Successfuly added the new task</p>';
 			}
-
-			mysqli_close($dbc);
-			exit();
 		} else {
 			// display errors
 			foreach ($errors as $msg) {
@@ -42,35 +35,36 @@
 		}
 
 
-	} else {
-		$q = "SELECT * FROM lists";
-		$r = mysqli_query($dbc, $q);
-		$num = mysqli_num_rows($r);
+	}
 
-		if ($num > 0) {
-			$lists = array();
+	// fetch the lists and their items
+	$q = "SELECT * FROM lists";
+	$r = mysqli_query($dbc, $q);
+	$num = mysqli_num_rows($r);
 
-			// build up an array with all the lists
-			while($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
-				$lists[$row['list_id']] = array(
-					'list_name' => $row['name'],
-					'todos' => array()
-				);
-			}
+	if ($num > 0) {
+		$lists = array();
 
-			$q = "SELECT todo_id, list_id, title FROM todos";
-			$r = mysqli_query($dbc, $q);
-
-			while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
-				$lists[$row['list_id']]['todos'][] = array(
-					'todo_id' => $row['todo_id'],
-					'title' => $row['title']
-				);
-			}
-
-		} else { // nothing
-			echo 'No tasks';
+		// build up an array with all the lists
+		while($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
+			$lists[$row['list_id']] = array(
+				'list_name' => $row['name'],
+				'todos' => array()
+			);
 		}
+
+		$q = "SELECT todo_id, list_id, title FROM todos";
+		$r = mysqli_query($dbc, $q);
+
+		while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
+			$lists[$row['list_id']]['todos'][] = array(
+				'todo_id' => $row['todo_id'],
+				'title' => $row['title']
+			);
+		}
+
+	} else { // nothing
+		echo 'No tasks';
 	}
 
 	mysqli_close($dbc);
@@ -91,37 +85,40 @@
 ?>
 
 
-		<div class="add-task">
-			<form action="index.php" method="post">
-				<input type="text" name="title">
-				<select name="list">
-					<option value="week">Week</option>
-					<option value="future">Future</option>
-				</select>
-				<input type="submit" value="Add Task">
-			</form>
-		</div>
-		<br />
-		<div class="unlock-day">
-			<form method="post">
-				Unlock weekly tasks on
-				<select name="week-days">
-					<option value="sunday">Sunday</option>
-					<option value="monday">Monday</option>
-					<option value="tuesday">Tuesday</option>
-					<option value="wednesday">Wednesday</option>
-					<option value="thursday">Thursday</option>
-					<option value="friday">Friday</option>
-					<option value="saturday">Saturday</option>
-				</select>
-			</form>
-		</div>
-		<div class="completed">
-			<h1>Completed tasks</h1>
-			<ul>
-				<li>blablabla - 19/01/2015</li>
-				<li>blablabla - 20/01/2015</li>
-			</ul>
-		</div>
+<div class="add-task">
+	<form action="index.php" method="post">
+		<input type="text" name="title">
+		<select name="list_id">
+		<?php
+		foreach($lists as $list_id => $list_info) {
+			echo '<option value=" '. $list_id . '">' . $list_info['list_name'] .'</option>';
+		}
+		?>
+		</select>
+		<input type="submit" value="Add Task">
+	</form>
+</div>
+<br />
+<div class="unlock-day">
+	<form method="post">
+		Unlock weekly tasks on
+		<select name="week-days">
+			<option value="sunday">Sunday</option>
+			<option value="monday">Monday</option>
+			<option value="tuesday">Tuesday</option>
+			<option value="wednesday">Wednesday</option>
+			<option value="thursday">Thursday</option>
+			<option value="friday">Friday</option>
+			<option value="saturday">Saturday</option>
+		</select>
+	</form>
+</div>
+<div class="completed">
+	<h1>Completed tasks</h1>
+	<ul>
+		<li>blablabla - 19/01/2015</li>
+		<li>blablabla - 20/01/2015</li>
+	</ul>
+</div>
 
 <?php include ('includes/footer.html');
