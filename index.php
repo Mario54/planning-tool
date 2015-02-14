@@ -5,10 +5,9 @@
 	require ('../mysqli_connect.php');
 
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
-		$errors = [];
+		$errors = []; // array to store errors
 
 		if (empty($_POST['title'])) {
-			// error
 			$errors[] = 'You did not enter a name for the task';
 		} else {
 			$t = $_POST['title'];
@@ -19,6 +18,7 @@
 			$l = $_POST['list_id'];
 		}
 
+		// check if there were any errors
 		if (empty($errors)) {
 			$q = "INSERT INTO todos (title, completed,
 				date_added, list_id) VALUES ('" . $t . "', 0, NOW(), $l)";
@@ -27,14 +27,11 @@
 			if ($r) {
 				echo '<p>Successfuly added the new task</p>';
 			}
-		} else {
-			// display errors
+		} else { // display the errors
 			foreach ($errors as $msg) {
-				echo '<p>' . $msg . '</p>';
+				echo '<p class="error">' . $msg . '</p>';
 			}
 		}
-
-
 	}
 
 	// fetch the lists and their items
@@ -43,7 +40,7 @@
 	$num = mysqli_num_rows($r);
 
 	if ($num > 0) {
-		$lists = array();
+		$lists = array(); // array to store the lists and their items
 
 		// build up an array with all the lists
 		while($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
@@ -53,6 +50,7 @@
 			);
 		}
 
+		// fetch the items in each list
 		$q = "SELECT todo_id, list_id, title FROM todos";
 		$r = mysqli_query($dbc, $q);
 
@@ -67,15 +65,17 @@
 		echo 'No tasks';
 	}
 
-	mysqli_close($dbc);
+	mysqli_close($dbc); // close connection
 
+	// display all the lists if there are any
 	if (isset($lists) && count($lists) > 0) {
 		foreach ($lists as $list_id => $list_info) {
 			echo '<div><h1>' . $list_info['list_name'] . '</h1>';
 			if (count($list_info['todos']) > 0) {
 				echo '<ul>';
 				foreach($list_info['todos'] as $todo_id => $todo_info) {
-					echo '<li>' . $todo_info['title'] . '</li>';
+					echo '<li><a href="todo.php?id=' . $todo_id .
+					'">' . $todo_info['title'] . '</a></li>';
 				}
 				echo '</ul>';
 			}
