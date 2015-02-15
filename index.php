@@ -73,8 +73,8 @@
 			echo '<div><h1>' . $list_info['list_name'] . '</h1>';
 			if (count($list_info['todos']) > 0) {
 				echo '<ul>';
-				foreach($list_info['todos'] as $todo_id => $todo_info) {
-					echo '<li><a href="todo.php?id=' . $todo_id .
+				foreach($list_info['todos'] as $todo_info) {
+					echo '<li><a href="todo.php?id=' . $todo_info['todo_id'] .
 					'">' . $todo_info['title'] . '</a></li>';
 				}
 				echo '</ul>';
