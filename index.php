@@ -1,6 +1,8 @@
 <?php
 	$page_title = 'Planning Tool';
 	include ('includes/header.html');
+	require ('lib/form_helper.php');
+	require ('lib/lists_queries.php');
 
 	require ('../mysqli_connect.php');
 
@@ -34,22 +36,10 @@
 		}
 	}
 
-	// fetch the lists and their items
-	$q = "SELECT * FROM lists";
-	$r = mysqli_query($dbc, $q);
-	$num = mysqli_num_rows($r);
+	$lists = get_lists($dbc); // will be false if there are no lists
 
-	if ($num > 0) {
-		$lists = array(); // array to store the lists and their items
+	if ($lists) {
 		$completed_todos = [];
-
-		// build up an array with all the lists
-		while($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
-			$lists[$row['list_id']] = array(
-				'list_name' => $row['name'],
-				'todos' => array()
-			);
-		}
 
 		// fetch the items in each list
 		$q = "SELECT todo_id, list_id, title, completed FROM todos";
@@ -63,8 +53,8 @@
 			}
 		}
 
-	} else { // nothing
-		echo 'No tasks';
+	} else { // no list
+		echo 'No list to display';
 	}
 
 	mysqli_close($dbc); // close connection
@@ -90,13 +80,7 @@
 <div class="add-task">
 	<form action="index.php" method="post">
 		<input type="text" name="title">
-		<select name="list_id">
-		<?php
-		foreach($lists as $list_id => $list_info) {
-			echo '<option value=" '. $list_id . '">' . $list_info['list_name'] .'</option>';
-		}
-		?>
-		</select>
+		<?php lists_dropdown($lists); ?>
 		<input type="submit" value="Add Task">
 	</form>
 </div>

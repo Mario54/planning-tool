@@ -1,7 +1,8 @@
 <?php
 
-
+require ('lib/lists_queries.php');
 require ('../mysqli_connect.php');
+require ('lib/form_helper.php');
 
 if ($_SERVER['REQUEST_METHOD'] == "GET") {
     $page_title = 'Todo';
@@ -12,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         $todo_id = mysqli_real_escape_string($dbc, $_GET['id']);
 
         $q = "SELECT t.todo_id, t.title, t.completed, t.date_added,
-                 t.date_completed, l.name AS list_name FROM todos AS t
+                 t.date_completed, list_id, l.name AS list_name FROM todos AS t
                  INNER JOIN lists AS l USING (list_id)
                  WHERE t.todo_id=$todo_id";
         $r = mysqli_query($dbc, $q);
@@ -20,21 +21,21 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         $num = mysqli_num_rows($r);
 
         if ($num > 0) {
-            while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
-                $todo = $row;
-                // $todo['completed'] = 1;
-                // var_dump($todo);
-            }
+            $todo = mysqli_fetch_array($r, MYSQLI_ASSOC);
+            $lists = get_lists($dbc);
         } else {
             echo 'No match';
+            exit();
         }
 
     } else {
         echo 'Didn\'t specify any id or id is not valid';
+        exit();
     }
 } elseif ($_SERVER['REQUEST_METHOD'] == "POST") {
     if (ctype_digit($_POST['todo_id'])) {
         $todo_id = mysqli_real_escape_string($dbc, $_POST['todo_id']);
+        $errors = array();
 
         // see if the 'completed' checkbox was checked
         if (isset($_POST['completed'])) {
@@ -43,23 +44,35 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
             $c = 0;
         }
 
-        if (isset($_POST['title'])) {
+        if (isset($_POST['title']) && !empty($_POST['title'])) {
             $t = $_POST['title'];
+        } else {
+            $errors[] = 'Title is empty';
         }
 
-        $q = "UPDATE todos SET completed=$c, title='$t' WHERE todo_id=$todo_id";
-        $r = mysqli_query($dbc, $q);
+        var_dump($_POST['list_id']);
+        if (isset($_POST['list_id']) && ctype_digit($_POST['list_id'])) {
+            $list_id = $_POST['list_id'];
+        } else {
+            $errors[] = 'Todo item ID doesn\'t match';
+        }
 
-        // var_dump(mysqli_error($dbc));
-        header("Location: index.php");
+        if (count($errors) == 0) {
+            $q = "UPDATE todos SET list_id=$list_id, completed=$c, title='$t' WHERE todo_id=$todo_id";
+            $r = mysqli_query($dbc, $q);
+
+            header("Location: index.php");
+            mysqli_close($dbc);
+            exit();
+        } else {
+            var_dump($errors);
+            exit();
+        }
+
+    } else {
         mysqli_close($dbc);
         exit();
     }
-
-    //header("Location: index.php");
-
-    mysqli_close($dbc);
-    exit();
 }
 ?>
 
@@ -70,13 +83,13 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
     </p>
 
     <p>
-        <label for="completed">Task title</label>
+        <label for="completed">Completed? </label>
         <input type="checkbox" name="completed" <?php if($todo['completed']) echo 'checked="' . $todo['completed'] .'"'; ?>>
     </p>
 
     <p>
         <label for="list_title">List: </label>
-        <input type="input" name="list_title" value="<?= $todo['list_name'] ?>">
+        <?php lists_dropdown($lists, $todo['list_id']); ?>
     </p>
 
     <p>
