@@ -41,6 +41,7 @@
 
 	if ($num > 0) {
 		$lists = array(); // array to store the lists and their items
+		$completed_todos = [];
 
 		// build up an array with all the lists
 		while($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
@@ -51,14 +52,15 @@
 		}
 
 		// fetch the items in each list
-		$q = "SELECT todo_id, list_id, title FROM todos WHERE completed=0";
+		$q = "SELECT todo_id, list_id, title, completed FROM todos";
 		$r = mysqli_query($dbc, $q);
 
 		while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
-			$lists[$row['list_id']]['todos'][] = array(
-				'todo_id' => $row['todo_id'],
-				'title' => $row['title']
-			);
+			if ($row['completed'] == '0') {
+				$lists[$row['list_id']]['todos'][] = $row;
+			} else {
+				$completed_todos[] = $row;
+			}
 		}
 
 	} else { // nothing
@@ -116,8 +118,11 @@
 <div class="completed">
 	<h1>Completed tasks</h1>
 	<ul>
-		<li>blablabla - 19/01/2015</li>
-		<li>blablabla - 20/01/2015</li>
+		<?php
+		foreach ($completed_todos as $todo) {
+			echo '<li>' . $todo['title'] . '</li>';
+		}
+		?>
 	</ul>
 </div>
 
