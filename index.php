@@ -2,7 +2,7 @@
 	$page_title = 'Planning Tool';
 	include ('includes/header.html');
 	require ('lib/form_helper.php');
-	require ('lib/lists_queries.php');
+	require ('lib/db_queries.php');
 
 	require ('../mysqli_connect.php');
 
@@ -41,17 +41,7 @@
 	if ($lists) {
 		$completed_todos = [];
 
-		// fetch the items in each list
-		$q = "SELECT todo_id, list_id, title, completed FROM todos";
-		$r = mysqli_query($dbc, $q);
-
-		while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
-			if ($row['completed'] == '0') {
-				$lists[$row['list_id']]['todos'][] = $row;
-			} else {
-				$completed_todos[] = $row;
-			}
-		}
+		get_todos($dbc, $lists, $completed_todos); // puts the todos in $lists array
 
 	} else { // no list
 		echo 'No list to display';
@@ -59,23 +49,8 @@
 
 	mysqli_close($dbc); // close connection
 
-	// display all the lists if there are any
-	if (isset($lists) && count($lists) > 0) {
-		foreach ($lists as $list_id => $list_info) {
-			echo '<div><h1>' . $list_info['list_name'] . '</h1>';
-			if (count($list_info['todos']) > 0) {
-				echo '<ul>';
-				foreach($list_info['todos'] as $todo_info) {
-					echo '<li><a href="todo.php?id=' . $todo_info['todo_id'] .
-					'">' . $todo_info['title'] . '</a></li>';
-				}
-				echo '</ul>';
-			}
-
-		}
-	}
+	display_lists($lists);
 ?>
-
 
 <div class="add-task">
 	<form action="index.php" method="post">

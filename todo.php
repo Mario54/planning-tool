@@ -1,6 +1,6 @@
 <?php
 
-require ('lib/lists_queries.php');
+require ('lib/db_queries.php');
 require ('../mysqli_connect.php');
 require ('lib/form_helper.php');
 
@@ -12,21 +12,14 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
 
         $todo_id = mysqli_real_escape_string($dbc, $_GET['id']);
 
-        $q = "SELECT t.todo_id, t.title, t.completed, t.date_added,
-                 t.date_completed, list_id, l.name AS list_name FROM todos AS t
-                 INNER JOIN lists AS l USING (list_id)
-                 WHERE t.todo_id=$todo_id";
-        $r = mysqli_query($dbc, $q);
+        $todo = get_todo($dbc, $todo_id);
 
-        $num = mysqli_num_rows($r);
-
-        if ($num > 0) {
-            $todo = mysqli_fetch_array($r, MYSQLI_ASSOC);
-            $lists = get_lists($dbc);
-        } else {
-            echo 'No match';
+        if (!$todo) {
+            echo 'Item not found';
             exit();
         }
+
+        $lists = get_lists($dbc);
 
     } else {
         echo 'Didn\'t specify any id or id is not valid';
