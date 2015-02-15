@@ -32,10 +32,20 @@ function display_lists($lists) {
                     '">' . $todo_info['title'] . '</a></li>';
                 }
                 echo '</ul>';
+            } else {
+                echo '<p>No items</p>';
             }
 
         }
     } else {
         echo 'No list';
     }
+}
+
+function display_completed($completed_todos) {
+    echo "<ul>\n";
+    foreach ($completed_todos as $todo) {
+        echo '<li>' . $todo['title'] . ' - Completed on: ' . $todo['date_completed'] . '</li>';
+    }
+    echo "</ul>\n";
 }

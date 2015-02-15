@@ -43,15 +43,30 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
             $errors[] = 'Title is empty';
         }
 
-        var_dump($_POST['list_id']);
         if (isset($_POST['list_id']) && ctype_digit($_POST['list_id'])) {
             $list_id = $_POST['list_id'];
         } else {
             $errors[] = 'Todo item ID doesn\'t match';
         }
 
-        if (count($errors) == 0) {
-            $q = "UPDATE todos SET list_id=$list_id, completed=$c, title='$t' WHERE todo_id=$todo_id";
+        if (count($errors) == 0) { // no errors -> put chagnes in DB
+            $original_todo = get_todo($dbc, $todo_id);
+
+            $date_completed = '';
+
+            // if the status (completed column) of the todo changed
+            // we update the date_completed field
+            if ($original_todo['completed'] != $c) {
+                if ($c == 0) {
+                    $date_completed = ', date_completed=NULL';
+                } else {
+                    $date_completed = ', date_completed=NOW()';
+                }
+
+            }
+
+            $q = "UPDATE todos SET list_id=$list_id, completed=$c, title='$t'
+                     $date_completed WHERE todo_id=$todo_id";
             $r = mysqli_query($dbc, $q);
 
             header("Location: index.php");

@@ -59,30 +59,10 @@
 		<input type="submit" value="Add Task">
 	</form>
 </div>
-<br />
-<div class="unlock-day">
-	<form method="post">
-		Unlock weekly tasks on
-		<select name="week-days">
-			<option value="sunday">Sunday</option>
-			<option value="monday">Monday</option>
-			<option value="tuesday">Tuesday</option>
-			<option value="wednesday">Wednesday</option>
-			<option value="thursday">Thursday</option>
-			<option value="friday">Friday</option>
-			<option value="saturday">Saturday</option>
-		</select>
-	</form>
-</div>
+
 <div class="completed">
 	<h1>Completed tasks</h1>
-	<ul>
-		<?php
-		foreach ($completed_todos as $todo) {
-			echo '<li>' . $todo['title'] . '</li>';
-		}
-		?>
-	</ul>
+	<?php display_completed($completed_todos); ?>
 </div>
 
 <?php include ('includes/footer.html');

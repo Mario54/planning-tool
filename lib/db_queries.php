@@ -1,5 +1,6 @@
 <?php
 
+// retrieves all the lists from the DB
 function get_lists($dbc) {
     $q = "SELECT * FROM lists";
     $r = mysqli_query($dbc, $q);
@@ -22,9 +23,10 @@ function get_lists($dbc) {
 }
 
 // if lists is null, just returns a list of todos
-function get_todos($dbc, &$lists = null, &$completed_todos) {
+function get_todos($dbc, &$lists = null, &$completed_todos = null) {
     // fetch the items in each list
-    $q = "SELECT todo_id, list_id, title, completed FROM todos";
+    $q = "SELECT todo_id, list_id, title, completed, date_completed, date_added
+     FROM todos";
     $r = mysqli_query($dbc, $q);
 
     if (!isset($lists)) {
@@ -33,10 +35,13 @@ function get_todos($dbc, &$lists = null, &$completed_todos) {
 
     while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
         if (isset($lists)) {
-            if ($row['completed'] == '0') {
+            if ($row['completed'] == '0') { // the item is not completed yet
                 $lists[$row['list_id']]['todos'][] = $row;
-            } else {
-                $completed_todos[] = $row;
+            } else { // the item is completed
+                // if $completed_todos is a reference to an array we add the current row
+                if (isset($completed_todos) && is_array($completed_todos)) {
+                    $completed_todos[] = $row;
+                }
             }
         } else {
             $todos[] = $row;
