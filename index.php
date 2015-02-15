@@ -51,7 +51,7 @@
 		}
 
 		// fetch the items in each list
-		$q = "SELECT todo_id, list_id, title FROM todos";
+		$q = "SELECT todo_id, list_id, title FROM todos WHERE completed=0";
 		$r = mysqli_query($dbc, $q);
 
 		while ($row = mysqli_fetch_array($r, MYSQLI_ASSOC)) {
