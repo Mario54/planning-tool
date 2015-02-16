@@ -38,7 +38,7 @@
 	background: grey;
 }
 
-.add-task {
+#add-task {
 	clear: both;
 	padding-top: 15px;
 }

@@ -52,8 +52,8 @@
 	display_lists($lists);
 ?>
 
-<div class="add-task">
-	<form action="index.php" method="post">
+<div id="add-task">
+	<form action="index.php" method="post" name="add_task">
 		<input type="text" name="title">
 		<?php lists_dropdown($lists); ?>
 		<input type="submit" value="Add Task">
@@ -64,5 +64,18 @@
 	<h1>Completed tasks</h1>
 	<?php display_completed($completed_todos); ?>
 </div>
+
+<script charset="utf-8">
+	var validator = new FormValidator('add_task', [{
+		name: 'title',
+		display: 'task description',
+		rules: 'required'
+	}], function (errors, event) {
+		if (errors.length > 0) {
+			document.getElementById('add-task').appendChild(document.createTextNode(errors[0]['message']));
+			//alert(JSON.stringify(errors, null, '\t'));
+		}
+	});
+</script>
 
 <?php include ('includes/footer.html');
