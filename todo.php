@@ -38,7 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         }
 
         if (isset($_POST['title']) && !empty($_POST['title'])) {
-            $t = $_POST['title'];
+            $t = mysqli_real_escape_string($dbc, $_POST['title']);
+
         } else {
             $errors[] = 'Title is empty';
         }

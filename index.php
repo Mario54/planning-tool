@@ -12,7 +12,7 @@
 		if (empty($_POST['title'])) {
 			$errors[] = 'You did not enter a name for the task';
 		} else {
-			$t = $_POST['title'];
+			$t = mysqli_real_escape_string($dbc, $_POST['title']);
 		}
 		if (empty($_POST['list_id'])) {
 			$errors[] = 'List doesn\'t exists';

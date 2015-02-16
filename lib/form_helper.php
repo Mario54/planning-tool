@@ -21,22 +21,27 @@ function lists_dropdown($lists, $current_list = null) {
 }
 
 function display_lists($lists) {
+
     // display all the lists if there are any
     if (isset($lists) && count($lists) > 0) {
+        echo '<div class="container">';
         foreach ($lists as $list_id => $list_info) {
-            echo '<div><h1>' . $list_info['list_name'] . '</h1>';
+            echo '<div class="list"><h1>' . $list_info['list_name'] . '</h1>';
             if (count($list_info['todos']) > 0) {
                 echo '<ul>';
                 foreach($list_info['todos'] as $todo_info) {
-                    echo '<li><a href="todo.php?id=' . $todo_info['todo_id'] .
-                    '">' . $todo_info['title'] . '</a></li>';
+                    echo '<a href="todo.php?id=' . $todo_info['todo_id'] .
+                    '">' . '<li>' . $todo_info['title'] . '</li></a>';
                 }
                 echo '</ul>';
             } else {
                 echo '<p>No items</p>';
             }
 
+            echo '</div>';
+
         }
+        echo '</div>';
     } else {
         echo 'No list';
     }
@@ -45,7 +50,8 @@ function display_lists($lists) {
 function display_completed($completed_todos) {
     echo "<ul>\n";
     foreach ($completed_todos as $todo) {
-        echo '<li>' . $todo['title'] . ' - Completed on: ' . $todo['date_completed'] . '</li>';
+        echo '<li><a href="todo.php?id=' . $todo['todo_id'] .'">' . $todo['title'] .
+        '</a> - Completed on: ' . $todo['date_completed'] . '</li>';
     }
     echo "</ul>\n";
 }

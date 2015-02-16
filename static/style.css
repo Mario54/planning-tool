@@ -1,0 +1,48 @@
+.list {
+	float: left;
+	margin-right: 5em;
+	width: 200px;
+	border: 1px solid black;
+	box-shadow: 4px 4px 3px #888888;
+	overflow: hidden;
+}
+
+.list a {
+	text-decoration: none;
+}
+
+.list h1 {
+	text-align: center;
+}
+
+.list ul {
+	list-style-type: none;
+	list-style-position: outside;
+	padding: 0;
+}
+
+.list li {
+	padding-left: 15px;
+	border-bottom: 1px solid black;
+	width: 100%;
+}
+
+.list a:last-child li {
+	border-bottom: 0;
+}
+
+.list li:hover {
+	padding-left: 15px;
+	border-bottom: 1px solid black;
+	width: 100%;
+	background: grey;
+}
+
+.add-task {
+	clear: both;
+	padding-top: 15px;
+}
+
+.error {
+	color: red;
+}
