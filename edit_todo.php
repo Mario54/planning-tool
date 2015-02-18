@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
 }
 ?>
 
-<form method="post">
+<form method="post" id="modify_task">
     <p>
         <label for="title">Task title</label>
         <input type="text" name="title" value="<?= $todo['title'] ?>">
@@ -106,6 +106,21 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         <input type="submit" value="Save">
     </p>
 </form>
+
+<script type="text/javascript">
+var validator = new FormValidator('modify_task', [{
+    name: 'title',
+    display: 'task description',
+    rules: 'required'
+}], function (errors, event) {
+    if (errors.length > 0) {
+        var message = document.createElement("p");
+        message.setAttribute("class", "error");
+        message.appendChild(document.createTextNode("You didn't enter anything for the task name"));
+        document.getElementById("modify_task").appendChild(message);
+    }
+});
+</script>
 
 
 <?php include ('includes/footer.html'); ?>

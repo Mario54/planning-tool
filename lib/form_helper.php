@@ -30,7 +30,7 @@ function display_lists($lists) {
             if (count($list_info['todos']) > 0) {
                 echo '<ul>';
                 foreach($list_info['todos'] as $todo_info) {
-                    echo '<a href="todo.php?id=' . $todo_info['todo_id'] .
+                    echo '<a href="edit_todo.php?id=' . $todo_info['todo_id'] .
                     '">' . '<li>' . $todo_info['title'] . '</li></a>';
                 }
                 echo '</ul>';
@@ -50,8 +50,8 @@ function display_lists($lists) {
 function display_completed($completed_todos) {
     echo "<ul>\n";
     foreach ($completed_todos as $todo) {
-        echo '<li><a href="todo.php?id=' . $todo['todo_id'] .'">' . $todo['title'] .
-        '</a> - Completed on: ' . $todo['date_completed'] . '</li>';
+        echo '<li><a href="edit_todo.php?id=' . $todo['todo_id'] .'">' . $todo['title'] .
+        '</a> - Completed on: ' . $todo['date_completed'] . ' - <a href="delete_todo.php?id='. $todo['todo_id'] .'">Delete</a></li>';
     }
     echo "</ul>\n";
 }

@@ -72,8 +72,10 @@
 		rules: 'required'
 	}], function (errors, event) {
 		if (errors.length > 0) {
-			document.getElementById('add-task').appendChild(document.createTextNode(errors[0]['message']));
-			//alert(JSON.stringify(errors, null, '\t'));
+			node = document.createElement("p");
+			node.setAttribute("class", "error");
+			node.appendChild(document.createTextNode(errors[0]['message']));
+			document.getElementById('add-task').appendChild(node);
 		}
 	});
 </script>
